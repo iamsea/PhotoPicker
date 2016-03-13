@@ -12,7 +12,7 @@ iOS8.0+
 
 ## 使用说明
 
-在需要使用的地方，直接调用一下代码即可
+在需要使用的地方，直接调用以下代码即可：
 
 ```
 let picker = PhotoPickerController(type: PageType.RecentAlbum)
