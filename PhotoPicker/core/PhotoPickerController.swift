@@ -28,7 +28,6 @@ class PhotoPickerController: UINavigationController {
     static var alreadySelectedImageNum = 0
     
     
-    
     weak var imageSelectDelegate: PhotoPickerControllerDelegate?
     
     override func viewDidLoad() {

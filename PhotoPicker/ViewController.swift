@@ -186,6 +186,26 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
      从相册中选择图片
      */
     private func selectFromPhoto(){
+        
+        PHPhotoLibrary.requestAuthorization { (status) -> Void in
+            switch status {
+            case .Authorized:
+                self.showLocalPhotoGallery()
+                break
+            default:
+                self.showNoPermissionDailog()
+                break
+            }
+        }
+    }
+    
+    private func showNoPermissionDailog(){
+        let alert = UIAlertController.init(title: nil, message: "没有打开相册的权限", preferredStyle: .Alert)
+        alert.addAction(UIAlertAction.init(title: "确定", style: .Default, handler: nil))
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    private func showLocalPhotoGallery(){
         let picker = PhotoPickerController(type: PageType.RecentAlbum)
         picker.imageSelectDelegate = self
         picker.modalPresentationStyle = .Popover
