@@ -7,6 +7,8 @@
 ## 支持版本
 ```
 iOS8.0+
+Swift3.0 (current master branch)
+
 ```
 
 
