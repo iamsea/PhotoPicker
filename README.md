@@ -12,7 +12,7 @@ iOS8.0+
 
 ## 使用说明
 
-在需要使用的地方，直接调用以下代码即可：
+当前`master`分支为`Swift3.0版本`分支，如果想使用`Swift 2.0+`系列，请切换到`Swfit2`分支，在需要使用的地方，直接调用以下代码即可：
 
 ```
 let picker = PhotoPickerController(type: PageType.RecentAlbum)
