@@ -38,23 +38,18 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
         return false
     }
     
-    func removeElement(element: String?){
-        if let localIdentifier = element {
-            for var i=0;i<self.selectModel.count;i++ {
-                let model = self.selectModel[i]
-                if model.data?.localIdentifier == localIdentifier {
-                    self.selectModel.removeAtIndex(i)
-                    self.triggerRefresh = true
-                }
-            }
+    func removeElement(element: PhotoImageModel?){
+        if let current = element {
+            self.selectModel = self.selectModel.filter({$0 != current});
         }
+    
     }
     
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        UIApplication.sharedApplication().statusBarStyle = .Default
-        self.navigationController?.navigationBar.barStyle = .Default
+        UIApplication.shared.statusBarStyle = .default
+        self.navigationController?.navigationBar.barStyle = .default
         
         if self.triggerRefresh {
             self.triggerRefresh = false
@@ -73,7 +68,7 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
         
         if selectModel.count <= 0 {return;}
         
-        let totalWidth = UIScreen.mainScreen().bounds.width
+        let totalWidth = UIScreen.main.bounds.width
         let space:CGFloat = 10
         let lineImageTotal = 4
         
@@ -83,49 +78,49 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
         let lessItemWidth = (totalWidth - (CGFloat(lineImageTotal) + 1) * space)
         let itemWidth = lessItemWidth / CGFloat(lineImageTotal)
         
-        for var i=0;i<line;i++ {
+        for i in 0 ..< line {
             let itemY = CGFloat(i+1) * space + CGFloat(i) * itemWidth
-            for var j=0;j<lineImageTotal;j++ {
+            for j in 0 ..< lineImageTotal {
                 let itemX = CGFloat(j+1) * space + CGFloat(j) * itemWidth
                 let index = i * lineImageTotal + j
-                self.renderItemView(itemX, itemY: itemY, itemWidth: itemWidth, index: index)
+                self.renderItemView(itemX: itemX, itemY: itemY, itemWidth: itemWidth, index: index)
             }
         }
         
         // last line
-        for var i=0;i<lastItems;i++ {
+        for i in 0..<lastItems{
             let itemX = CGFloat(i+1) * space + CGFloat(i) * itemWidth
             let itemY = CGFloat(line+1) * space + CGFloat(line) * itemWidth
             let index = line * lineImageTotal + i
-            self.renderItemView(itemX, itemY: itemY, itemWidth: itemWidth, index: index)
+            self.renderItemView(itemX: itemX, itemY: itemY, itemWidth: itemWidth, index: index)
         }
         
         let totalLine = ceil(Double(self.selectModel.count) / Double(lineImageTotal))
         let containerHeight = CGFloat(totalLine) * itemWidth + (CGFloat(totalLine) + 1) *  space
-        self.containerView.frame = CGRectMake(0, 0, totalWidth,  containerHeight)
+        self.containerView.frame = CGRect(x:0, y:0, width:totalWidth,  height:containerHeight)
     }
     
     private func renderItemView(itemX:CGFloat,itemY:CGFloat,itemWidth:CGFloat,index:Int){
         let itemModel = self.selectModel[index]
-        let button = UIButton(frame: CGRectMake(itemX, itemY, itemWidth, itemWidth))
-        button.backgroundColor = UIColor.redColor()
+        let button = UIButton(frame: CGRect(x:itemX, y:itemY, width:itemWidth, height: itemWidth))
+        button.backgroundColor = UIColor.red
         button.tag = index
         
         if itemModel.type == ModelType.Button {
-            button.backgroundColor = UIColor.clearColor()
-            button.addTarget(self, action: "eventAddImage", forControlEvents: .TouchUpInside)
-            button.contentMode = .ScaleAspectFill
+            button.backgroundColor = UIColor.clear
+            button.addTarget(self, action: #selector(ViewController.eventAddImage), for: .touchUpInside)
+            button.contentMode = .scaleAspectFill
             button.layer.borderWidth = 2
-            button.layer.borderColor = UIColor.init(red: 200/255, green: 200/255, blue: 200/255, alpha: 1).CGColor
-            button.setImage(UIImage(named: "image_select"), forState: UIControlState.Normal)
+            button.layer.borderColor = UIColor.init(red: 200/255, green: 200/255, blue: 200/255, alpha: 1).cgColor
+            button.setImage(UIImage(named: "image_select"), for: UIControlState.normal)
         } else {
-            button.addTarget(self, action: "eventPreview:", forControlEvents: .TouchUpInside)
+            button.addTarget(self, action: #selector(ViewController.eventPreview), for: .touchUpInside)
             if let asset = itemModel.data {
-                let pixSize = UIScreen.mainScreen().scale * itemWidth
-                PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: CGSizeMake(pixSize, pixSize), contentMode: PHImageContentMode.AspectFill, options: nil, resultHandler: { (image, info) -> Void in
+                let pixSize = UIScreen.main.scale * itemWidth
+                PHImageManager.default().requestImage(for: asset, targetSize: CGSize(width: pixSize, height: pixSize), contentMode: PHImageContentMode.aspectFill, options: nil, resultHandler: { (image, info) -> Void in
                     if image != nil {
-                        button.setImage(image, forState: UIControlState.Normal)
-                        button.contentMode = .ScaleAspectFill
+                        button.setImage(image, for: UIControlState.normal)
+                        button.contentMode = .scaleAspectFill
                         button.clipsToBounds = true
                     }
                 })
@@ -149,22 +144,22 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
         preview.selectImages = data
         preview.sourceDelegate = self
         preview.currentPage = button.tag
-        self.showViewController(preview, sender: nil)
+        self.show(preview, sender: nil)
     }
     
     
     func eventAddImage() {
-        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .ActionSheet)
+        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
         
         // change the style sheet text color
-        alert.view.tintColor = UIColor.blackColor()
+        alert.view.tintColor = UIColor.black
         
-        let actionCancel = UIAlertAction.init(title: "取消", style: .Cancel, handler: nil)
-        let actionCamera = UIAlertAction.init(title: "拍照", style: .Default) { (UIAlertAction) -> Void in
+        let actionCancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+        let actionCamera = UIAlertAction.init(title: "拍照", style: .default) { (UIAlertAction) -> Void in
             self.selectByCamera()
         }
         
-        let actionPhoto = UIAlertAction.init(title: "从手机照片中选择", style: .Default) { (UIAlertAction) -> Void in
+        let actionPhoto = UIAlertAction.init(title: "从手机照片中选择", style: .default) { (UIAlertAction) -> Void in
             self.selectFromPhoto()
         }
         
@@ -172,7 +167,7 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
         alert.addAction(actionCamera)
         alert.addAction(actionPhoto)
         
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
     
     /**
@@ -189,7 +184,7 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
         
         PHPhotoLibrary.requestAuthorization { (status) -> Void in
             switch status {
-            case .Authorized:
+            case .authorized:
                 self.showLocalPhotoGallery()
                 break
             default:
@@ -200,15 +195,15 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
     }
     
     private func showNoPermissionDailog(){
-        let alert = UIAlertController.init(title: nil, message: "没有打开相册的权限", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction.init(title: "确定", style: .Default, handler: nil))
-        self.presentViewController(alert, animated: true, completion: nil)
+        let alert = UIAlertController.init(title: nil, message: "没有打开相册的权限", preferredStyle: .alert)
+        alert.addAction(UIAlertAction.init(title: "确定", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
     
     private func showLocalPhotoGallery(){
         let picker = PhotoPickerController(type: PageType.RecentAlbum)
         picker.imageSelectDelegate = self
-        picker.modalPresentationStyle = .Popover
+        picker.modalPresentationStyle = .popover
         
         // max select number
         PhotoPickerController.imageMaxSelectedNum = 4
@@ -217,23 +212,25 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
         let realModel = self.getModelExceptButton()
         PhotoPickerController.alreadySelectedImageNum = realModel.count
         
-        self.showViewController(picker, sender: nil)
+        self.show(picker, sender: nil)
     }
     
     func onImageSelectFinished(images: [PHAsset]) {
-        self.renderSelectImages(images)
+        self.renderSelectImages(images: images)
     }
     
     private func renderSelectImages(images: [PHAsset]){
         for item in images {
-            self.selectModel.insert(PhotoImageModel(type: ModelType.Image, data: item), atIndex: 0)
+            self.selectModel.insert(PhotoImageModel(type: ModelType.Image, data: item), at: 0)
         }
         
-        if self.selectModel.count > PhotoPickerController.imageMaxSelectedNum {
-            for var i=0;i<self.selectModel.count;i++ {
+        let total = self.selectModel.count;
+        if total > PhotoPickerController.imageMaxSelectedNum {
+            for i in 0 ..< total {
                 let item = self.selectModel[i]
                 if item.type == .Button {
-                    self.selectModel.removeAtIndex(i)
+                    self.selectModel.remove(at: i)
+
                 }
             }
         }
@@ -242,7 +239,7 @@ class ViewController: UIViewController,PhotoPickerControllerDelegate {
     
     private func getModelExceptButton()->[PhotoImageModel]{
         var newModels = [PhotoImageModel]()
-        for var i=0;i<self.selectModel.count;i++ {
+        for i in 0..<self.selectModel.count {
             let item = self.selectModel[i]
             if item.type != .Button {
                 newModels.append(item)

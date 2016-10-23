@@ -19,31 +19,31 @@ class PhotoAlbumTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.layoutMargins = UIEdgeInsetsZero
+        self.layoutMargins = UIEdgeInsets.zero
         let bgView = UIView()
         bgView.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.1)
         self.selectedBackgroundView = bgView
     }
     
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
     
     
-    func renderData(result:PHFetchResult, label: String?){
+    func renderData(result:PHFetchResult<AnyObject>, label: String?){
         self.albumTitle.text = label
         self.albumNumber.text = String(result.count)
         
         if result.count > 0 {
             if let firstImageAsset = result[0] as? PHAsset {
-                let retinaMultiplier = UIScreen.mainScreen().scale
+                let retinaMultiplier = UIScreen.main.scale
                 let realSize = self.imageSize * retinaMultiplier
-                let size = CGSizeMake(realSize, realSize)
+                let size = CGSize(width:realSize, height: realSize)
                 
                 let imageOptions = PHImageRequestOptions()
-                imageOptions.resizeMode = .Exact
+                imageOptions.resizeMode = .exact
                 
-                PHImageManager.defaultManager().requestImageForAsset(firstImageAsset, targetSize: size, contentMode: .AspectFill, options: imageOptions, resultHandler: { (image, info) -> Void in
+                PHImageManager.default().requestImage(for: firstImageAsset, targetSize: size, contentMode: .aspectFill, options: imageOptions, resultHandler: { (image, info) -> Void in
                     self.albumCover.image = image
                 })
             }

@@ -9,43 +9,43 @@
 import UIKit
 import Photos
 
-private let instance = PhotoImageManager() ;
 
 class PhotoImageManager: PHCachingImageManager {
+    
     // singleton class
     static let sharedManager = PhotoImageManager()
     private override init() {super.init()}
     
-    func getPhotoByMaxSize(asset: PHObject, size: CGFloat, completion: (UIImage?, [NSObject : AnyObject]?)->Void){
+    func getPhotoByMaxSize(asset: PHObject, size: CGFloat, completion: @escaping (UIImage?, [NSObject : AnyObject]?)->Void){
         
         let maxSize = size > PhotoPickerConfig.PreviewImageMaxFetchMaxWidth ? PhotoPickerConfig.PreviewImageMaxFetchMaxWidth : size
         if let asset = asset as? PHAsset {
             
             let factor = CGFloat(asset.pixelHeight)/CGFloat(asset.pixelWidth)
-            let scale = UIScreen.mainScreen().scale
+            let scale = UIScreen.main.scale
             let pixcelWidth = maxSize * scale
             let pixcelHeight = CGFloat(pixcelWidth) * factor
             
-            PhotoImageManager.sharedManager.requestImageForAsset(asset, targetSize: CGSizeMake(pixcelWidth, pixcelHeight), contentMode: .AspectFit, options: nil, resultHandler: { (image, info) -> Void in
+            PhotoImageManager.sharedManager.requestImage(for: asset, targetSize: CGSize(width:pixcelWidth, height: pixcelHeight), contentMode: .aspectFit, options: nil, resultHandler: { (image, info) -> Void in
                 
                 if let info = info as? [String:AnyObject] {
                     let canceled = info[PHImageCancelledKey] as? Bool
                     let error = info[PHImageErrorKey] as? NSError
                     
                     if canceled == nil && error == nil && image != nil {
-                        completion(image,info)
+                        completion(image,info as [NSObject : AnyObject]?)
                     }
                     
                     // download from iCloud
                     let isCloud = info[PHImageResultIsInCloudKey] as? Bool
                     if isCloud != nil && image == nil {
                         let options = PHImageRequestOptions()
-                        options.networkAccessAllowed = true
-                        PhotoImageManager.sharedManager.requestImageDataForAsset(asset, options: options, resultHandler: { (data, dataUTI, oritation, info) -> Void in
+                        options.isNetworkAccessAllowed = true
+                        PhotoImageManager.sharedManager.requestImageData(for: asset, options: options, resultHandler: { (data, dataUTI, oritation, info) -> Void in
                             
                             if let data = data {
                                 let resultImage = UIImage(data: data, scale: 0.1)
-                                completion(resultImage,info)
+                                completion(resultImage,info as [NSObject : AnyObject]?)
                             }
                         })
                     }

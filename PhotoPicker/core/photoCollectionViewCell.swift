@@ -1,3 +1,4 @@
+
 //
 //  photoCollectionViewCell.swift
 //  PhotoPicker
@@ -26,33 +27,33 @@ class photoCollectionViewCell: UICollectionViewCell {
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
-		self.thumbnail.contentMode = .ScaleAspectFill
+		self.thumbnail.contentMode = .scaleAspectFill
 		self.thumbnail.clipsToBounds = true
 	}
     
     func updateSelected(select:Bool){
-        self.selectButton.selected = select
-        self.imageSelect.hidden = !select
+        self.selectButton.isSelected = select
+        self.imageSelect.isHidden = !select
         
         if select {
-            self.selectButton.setImage(nil, forState: UIControlState.Normal)
+            self.selectButton.setImage(nil, for: UIControlState.normal)
         } else {
-            self.selectButton.setImage(UIImage(named: "picture_unselect"), forState: UIControlState.Normal)
+            self.selectButton.setImage(UIImage(named: "picture_unselect"), for: UIControlState.normal)
         }
     }
 	
 	@IBAction func eventImageSelect(sender: UIButton) {
-		if sender.selected {
-			sender.selected = false
-			self.imageSelect.hidden = true
-			sender.setImage(UIImage(named: "picture_unselect"), forState: UIControlState.Normal)
+		if sender.isSelected {
+			sender.isSelected = false
+			self.imageSelect.isHidden = true
+			sender.setImage(UIImage(named: "picture_unselect"), for: UIControlState.normal)
 			if delegate != nil {
-				if let index = PhotoImage.instance.selectedImage.indexOf(self.model!) {
-					PhotoImage.instance.selectedImage.removeAtIndex(index)
+				if let index = PhotoImage.instance.selectedImage.index(of: self.model!) {
+					PhotoImage.instance.selectedImage.remove(at: index)
 				}
                 
                 if self.eventDelegate != nil {
-                    self.eventDelegate!.eventSelectNumberChange(PhotoImage.instance.selectedImage.count)
+                    self.eventDelegate!.eventSelectNumberChange(number: PhotoImage.instance.selectedImage.count)
                 }
 			}
 		} else {
@@ -65,17 +66,17 @@ class photoCollectionViewCell: UICollectionViewCell {
 					PhotoImage.instance.selectedImage.append(self.model!)
                     
                     if self.eventDelegate != nil {
-                        self.eventDelegate!.eventSelectNumberChange(PhotoImage.instance.selectedImage.count)
+                        self.eventDelegate!.eventSelectNumberChange(number: PhotoImage.instance.selectedImage.count)
                     }
 				}
 			}
 			
-			sender.selected = true
-            self.imageSelect.hidden = false
-			sender.setImage(nil, forState: UIControlState.Normal)
-			self.imageSelect.transform = CGAffineTransformMakeScale(0.8, 0.8)
-			UIView.animateWithDuration(0.4, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 6, options: [UIViewAnimationOptions.CurveEaseIn], animations: { () -> Void in
-					self.imageSelect.transform = CGAffineTransformMakeScale(1.0, 1.0)
+			sender.isSelected = true
+            self.imageSelect.isHidden = false
+			sender.setImage(nil, for: UIControlState.normal)
+			self.imageSelect.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+			UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 6, options: [UIViewAnimationOptions.curveEaseIn], animations: { () -> Void in
+					self.imageSelect.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
 				}, completion: nil)
 		}
 	}
@@ -84,14 +85,14 @@ class photoCollectionViewCell: UICollectionViewCell {
 		if self.delegate != nil {
             let less = PhotoPickerController.imageMaxSelectedNum - PhotoPickerController.alreadySelectedImageNum
             
-            let range = PhotoPickerConfig.ErrorImageMaxSelect.rangeOfString("#")
+            let range = PhotoPickerConfig.ErrorImageMaxSelect.range(of:"#")
             var error = PhotoPickerConfig.ErrorImageMaxSelect
-            error.replaceRange(range!, with: String(less))
+            error.replaceSubrange(range!, with: String(less))
             
-			let alert = UIAlertController.init(title: nil, message: error, preferredStyle: UIAlertControllerStyle.Alert)
-			let confirmAction = UIAlertAction(title: PhotoPickerConfig.ButtonConfirmTitle, style: .Default, handler: nil)
+			let alert = UIAlertController.init(title: nil, message: error, preferredStyle: UIAlertControllerStyle.alert)
+			let confirmAction = UIAlertAction(title: PhotoPickerConfig.ButtonConfirmTitle, style: .default, handler: nil)
 			alert.addAction(confirmAction)
-			self.delegate?.presentViewController(alert, animated: true, completion: nil)
+			self.delegate?.present(alert, animated: true, completion: nil)
 		}
 	}
 }

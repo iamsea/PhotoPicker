@@ -21,7 +21,7 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
 	private let toolbarHeight: CGFloat = 44.0
 	
 	var assetGridThumbnailSize: CGSize?
-	var fetchResult: PHFetchResult?
+	var fetchResult: PHFetchResult<PHObject>?
 	var previousPreheatRect: CGRect?
     var toolbar: AlbumToolbarView?
     
@@ -29,11 +29,11 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
 		super.viewDidLoad()
         
         let originFrame = self.collectionView!.frame
-        self.collectionView!.frame = CGRectMake(originFrame.origin.x, originFrame.origin.y, originFrame.size.width, originFrame.height - self.toolbarHeight)
+        self.collectionView!.frame = CGRect(x:originFrame.origin.x, y:originFrame.origin.y, width:originFrame.size.width, height: originFrame.height - self.toolbarHeight)
         
 		self.resetCacheAssets()
         
-		PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self)
+		PHPhotoLibrary.shared().register(self)
 		
 		self.collectionView?.contentInset = UIEdgeInsetsMake(
             PhotoPickerConfig.MinimumInteritemSpacing,
@@ -42,7 +42,7 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
             PhotoPickerConfig.MinimumInteritemSpacing
         )
 		
-		self.collectionView!.registerNib(UINib.init(nibName: reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: reuseIdentifier)
+		self.collectionView!.register(UINib.init(nibName: reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: reuseIdentifier)
 		
 		self.configBackground()
         self.configBottomToolBar()
@@ -51,27 +51,27 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
     
 	private func configBottomToolBar() {
         if self.toolbar != nil {return}
-		let width = UIScreen.mainScreen().bounds.width
-        let positionX = UIScreen.mainScreen().bounds.height - self.toolbarHeight
-        self.toolbar = AlbumToolbarView(frame: CGRectMake(0,positionX,width,self.toolbarHeight))
+		let width = UIScreen.main.bounds.width
+        let positionX = UIScreen.main.bounds.height - self.toolbarHeight
+        self.toolbar = AlbumToolbarView(frame: CGRect(x:0,y: positionX,width: width,height: self.toolbarHeight))
         self.toolbar?.delegate = self
 		self.view.addSubview(self.toolbar!)
         
         if PhotoImage.instance.selectedImage.count > 0 {
-            self.toolbar?.changeNumber(PhotoImage.instance.selectedImage.count)
+            self.toolbar?.changeNumber(number: PhotoImage.instance.selectedImage.count)
         }
 	}
 	
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		self.navigationController?.navigationBarHidden = false
-        UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: .None)
+		self.navigationController?.isNavigationBarHidden = false
+        UIApplication.shared.setStatusBarHidden(false, with: .none)
         
         if assetGridThumbnailSize == nil {
-            let scale = UIScreen.mainScreen().scale
+            let scale = UIScreen.main.scale
             let cellSize = (self.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
             let size = cellSize.width * scale
-            assetGridThumbnailSize = CGSizeMake(size, size)
+            assetGridThumbnailSize = CGSize(width: size, height: size)
         }
 	}
     
@@ -83,17 +83,17 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
     }
     
     private func configNavigationBar(){
-        let cancelButton = UIBarButtonItem.init(barButtonSystemItem: .Cancel, target: self, action: "eventCancel")
+        let cancelButton = UIBarButtonItem.init(barButtonSystemItem: .cancel, target: self, action: #selector(PhotoCollectionViewController.eventCancel))
         self.navigationItem.rightBarButtonItem = cancelButton
     }
     
     // MARK: -  cancel
     func eventCancel(){
         PhotoImage.instance.selectedImage.removeAll()
-        self.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+        self.navigationController?.dismiss(animated: true, completion: nil)
     }
 	
-	override func viewDidAppear(animated: Bool) {
+	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		self.updateCacheAssets()
 	}
@@ -101,47 +101,48 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
 	// MARK: -   image caches
 	private func resetCacheAssets() {
 		self.imageManager.stopCachingImagesForAllAssets()
-		self.previousPreheatRect = CGRectZero
+		self.previousPreheatRect = CGRect.zero
+        
 	}
 	
 	func updateCacheAssets() {
-		let isViewVisible = self.isViewLoaded() && self.view.window != nil;
+		let isViewVisible = self.isViewLoaded && self.view.window != nil;
 		if !isViewVisible { return; }
 		
 		// The preheat window is twice the height of the visible rect.
 		var preheatRect = self.collectionView?.bounds
 		if preheatRect != nil {
-			preheatRect = CGRectInset(preheatRect!, 0, -0.5 * CGRectGetHeight(preheatRect!)) ;
+			preheatRect = preheatRect!.insetBy(dx: 0, dy: -0.5 * preheatRect!.height) ;
 			
-			let delta = abs(CGRectGetMidY(preheatRect!) - CGRectGetMidY(self.previousPreheatRect!))
+			let delta = abs(preheatRect!.midY - self.previousPreheatRect!.midY)
 			
-			if (delta > CGRectGetHeight(self.collectionView!.bounds) / 3.0) {
+			if (delta > self.collectionView!.bounds.height / 3.0) {
 				
-				var addedIndexPaths = [NSIndexPath]()
-				var removedIndexPaths = [NSIndexPath]()
-				self.computeDifferenceBetweenRect(self.previousPreheatRect!, newRect: preheatRect!, removedHandler: { (removedRect) -> Void in
+				var addedIndexPaths = [IndexPath]()
+				var removedIndexPaths = [IndexPath]()
+				self.computeDifferenceBetweenRect(oldRect: self.previousPreheatRect!, newRect: preheatRect!, removedHandler: { (removedRect) -> Void in
 						// somde code
-						let indexPaths = self.collectionView!.aapl_indexPathsForElementsInRect(removedRect)
+						let indexPaths = self.collectionView!.aapl_indexPathsForElementsInRect(rect: removedRect)
 						if indexPaths != nil {
-							removedIndexPaths.appendContentsOf(indexPaths!)
+                            removedIndexPaths.append(contentsOf: indexPaths!)
 						}
 					}, addedHandler: { (addedRect) -> Void in
 						
-						let indexPaths = self.collectionView!.aapl_indexPathsForElementsInRect(addedRect)
+						let indexPaths = self.collectionView!.aapl_indexPathsForElementsInRect(rect: addedRect)
 						if indexPaths != nil {
-							addedIndexPaths.appendContentsOf(indexPaths!)
+                            addedIndexPaths.append(contentsOf: indexPaths!)
 						}
 					})
 				
-				let assetsToStartCaching = self.assetsAtIndexPaths(addedIndexPaths)
-				let assetsToStopCaching = self.assetsAtIndexPaths(removedIndexPaths)
+				let assetsToStartCaching = self.assetsAtIndexPaths(indexPaths: addedIndexPaths as [NSIndexPath])
+				let assetsToStopCaching = self.assetsAtIndexPaths(indexPaths: removedIndexPaths as [NSIndexPath])
 				
 				if assetsToStartCaching != nil {
-					self.imageManager.startCachingImagesForAssets(assetsToStartCaching!, targetSize: self.assetGridThumbnailSize!, contentMode: .AspectFill, options: nil)
+					self.imageManager.startCachingImages(for: assetsToStartCaching!, targetSize: self.assetGridThumbnailSize!, contentMode: .aspectFill, options: nil)
 				}
 				
 				if assetsToStopCaching != nil {
-					self.imageManager.stopCachingImagesForAssets(assetsToStopCaching!, targetSize: self.assetGridThumbnailSize!, contentMode: .AspectFill, options: nil)
+					self.imageManager.stopCachingImages(for: assetsToStopCaching!, targetSize: self.assetGridThumbnailSize!, contentMode: .aspectFill, options: nil)
 				}
 				
 				self.previousPreheatRect = preheatRect;
@@ -152,11 +153,11 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
     // MARK: -  PhotoCollectionViewCellDelegate
     func eventSelectNumberChange(number: Int) {
         if let toolbar = self.toolbar {
-            toolbar.changeNumber(number)
+            toolbar.changeNumber(number: number)
         }
     }
     
-	override func scrollViewDidScroll(scrollView: UIScrollView) {
+	override func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		self.updateCacheAssets()
 	}
 	
@@ -173,29 +174,29 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
 	
 	func computeDifferenceBetweenRect(oldRect: CGRect, newRect: CGRect, removedHandler: (CGRect) -> Void, addedHandler: (CGRect) -> Void) {
 		
-		if CGRectIntersectsRect(newRect, oldRect) {
-			let oldMaxY = CGRectGetMaxY(oldRect)
-			let oldMinY = CGRectGetMaxX(oldRect)
-			let newMaxY = CGRectGetMaxY(newRect) ;
-			let newMinY = CGRectGetMinY(newRect) ;
+		if newRect.intersects(oldRect) {
+			let oldMaxY = oldRect.maxY
+			let oldMinY = oldRect.maxX
+			let newMaxY = newRect.maxY ;
+			let newMinY = newRect.minY ;
 			
 			if newMaxY > oldMaxY {
-				let rectToAdd = CGRectMake(newRect.origin.x, oldMaxY, newRect.size.width, (newMaxY - oldMaxY))
+                let rectToAdd = CGRect(x:newRect.origin.x, y:oldMaxY, width: newRect.size.width, height: (newMaxY - oldMaxY))
 				addedHandler(rectToAdd)
 			}
 			
 			if oldMinY > newMinY {
-				let rectToAdd = CGRectMake(newRect.origin.x, newMinY, newRect.size.width, (oldMinY - newMinY))
+                let rectToAdd = CGRect(x: newRect.origin.x, y: newMinY, width: newRect.size.width, height: (oldMinY - newMinY))
 				addedHandler(rectToAdd)
 			}
 			
 			if newMaxY < oldMaxY {
-				let rectToRemove = CGRectMake(newRect.origin.x, newMaxY, newRect.size.width, (oldMaxY - newMaxY))
+                let rectToRemove = CGRect(x: newRect.origin.x, y: newMaxY, width: newRect.size.width, height: (oldMaxY - newMaxY))
 				removedHandler(rectToRemove)
 			}
 			
 			if oldMinY < newMinY {
-				let rectToRemove = CGRectMake(newRect.origin.x, oldMinY, newRect.size.width, (newMinY - oldMinY))
+                let rectToRemove = CGRect(x: newRect.origin.x, y: oldMinY, width: newRect.size.width, height: (newMinY - oldMinY))
 				removedHandler(rectToRemove)
 			}
 		} else {
@@ -205,43 +206,45 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
 	}
 	
 	deinit {
-		PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
+		PHPhotoLibrary.shared().unregisterChangeObserver(self)
 	}
 	
-	func photoLibraryDidChange(changeInstance: PHChange) {
-		if let collectionChanges = changeInstance.changeDetailsForFetchResult(self.fetchResult!) {
+	func photoLibraryDidChange(_ changeInstance: PHChange) {
+        
+        
+        if let collectionChanges = changeInstance.changeDetails(for: fetchResult!) {
 			
-			dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					
-					self.fetchResult = collectionChanges.fetchResultAfterChanges
-					let collectionView = self.collectionView!;
-					
-					if !(collectionChanges.hasIncrementalChanges || collectionChanges.hasMoves) {
-						collectionView.reloadData()
-					} else {
-						collectionView.performBatchUpdates({ () -> Void in
-								if let removedIndexes = collectionChanges.removedIndexes {
-									
-									if removedIndexes.count > 0 {
-										collectionView.deleteItemsAtIndexPaths(removedIndexes.aapl_indexPathsFromIndexesWithSection(0))
-									}
-								}
-								
-								if let insertedIndexes = collectionChanges.insertedIndexes {
-									if insertedIndexes.count > 0 {
-										collectionView.insertItemsAtIndexPaths(insertedIndexes.aapl_indexPathsFromIndexesWithSection(0))
-									}
-								}
-							}, completion: nil)
-					}
-					
-					self.resetCacheAssets()
-				})
+            DispatchQueue.main.async {
+                self.fetchResult = collectionChanges.fetchResultAfterChanges
+                let collectionView = self.collectionView!;
+                
+                if !(collectionChanges.hasIncrementalChanges || collectionChanges.hasMoves) {
+                    collectionView.reloadData()
+                } else {
+                    collectionView.performBatchUpdates({ () -> Void in
+                        if let removed = collectionChanges.removedIndexes , removed.count > 0 {
+                            collectionView.deleteItems(at: removed.map { IndexPath(item: $0, section:0) })
+                        }
+                        if let inserted = collectionChanges.insertedIndexes , inserted.count > 0 {
+                            collectionView.insertItems(at: inserted.map { IndexPath(item: $0, section:0) })
+                        }
+                        if let changed = collectionChanges.changedIndexes , changed.count > 0 {
+                            collectionView.reloadItems(at: changed.map { IndexPath(item: $0, section:0) })
+                        }
+                        collectionChanges.enumerateMoves { fromIndex, toIndex in
+                            collectionView.moveItem(at: IndexPath(item: fromIndex, section: 0),
+                                                    to: IndexPath(item: toIndex, section: 0))
+                        }
+                        }, completion: nil)
+                }
+                
+                self.resetCacheAssets()
+            }
 		}
 	}
 	
 	private func configBackground() {
-		self.collectionView?.backgroundColor = UIColor.whiteColor()
+		self.collectionView?.backgroundColor = UIColor.white
 	}
 	
 	override init(collectionViewLayout layout: UICollectionViewLayout) {
@@ -255,27 +258,27 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
 	class func configCustomCollectionLayout() -> UICollectionViewFlowLayout {
 		let collectionLayout = UICollectionViewFlowLayout()
 		
-		let width = UIScreen.mainScreen().bounds.width - PhotoPickerConfig.MinimumInteritemSpacing * 2
+		let width = UIScreen.main.bounds.width - PhotoPickerConfig.MinimumInteritemSpacing * 2
 		collectionLayout.minimumInteritemSpacing = PhotoPickerConfig.MinimumInteritemSpacing
 		
 		let cellToUsableWidth = width - (PhotoPickerConfig.ColNumber - 1) * PhotoPickerConfig.MinimumInteritemSpacing
 		let size = cellToUsableWidth / PhotoPickerConfig.ColNumber
-		collectionLayout.itemSize = CGSizeMake(size, size)
+        collectionLayout.itemSize = CGSize(width:size, height: size)
 		collectionLayout.minimumLineSpacing = PhotoPickerConfig.MinimumInteritemSpacing
 		return collectionLayout
 	}
 	
 	// MARK: -  UICollectionView delegate
-	override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
 		return 1
 	}
 	
-	override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+	override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return self.fetchResult != nil ? self.fetchResult!.count : 0
 	}
 	
-	override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! photoCollectionViewCell
+	override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! photoCollectionViewCell
 		
 		cell.delegate = self;
         cell.eventDelegate = self
@@ -283,28 +286,27 @@ class PhotoCollectionViewController: UICollectionViewController, PHPhotoLibraryC
 		if let asset = self.fetchResult![indexPath.row] as? PHAsset {
 			cell.model = asset
 			cell.representedAssetIdentifier = asset.localIdentifier
-			self.imageManager.requestImageForAsset(asset, targetSize: self.assetGridThumbnailSize!, contentMode: .AspectFill, options: nil) { (image, info) -> Void in
+			self.imageManager.requestImage(for: asset, targetSize: self.assetGridThumbnailSize!, contentMode: .aspectFill, options: nil) { (image, info) -> Void in
 				if cell.representedAssetIdentifier == asset.localIdentifier {
 					cell.thumbnail.image = image
 				}
 			}
-            cell.updateSelected(PhotoImage.instance.selectedImage.indexOf(asset) != nil)
+            cell.updateSelected(select: PhotoImage.instance.selectedImage.index(of: asset) != nil)
 		}
 		return cell
 	}
 	
 	// MARK: UICollectionViewDelegate
-	override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let previewController = PhotoPreviewViewController(nibName: nil, bundle: nil)
-        previewController.allSelectImage = self.fetchResult
+        previewController.allSelectImage = self.fetchResult as! PHFetchResult<AnyObject>?
         previewController.currentPage = indexPath.row
         previewController.fromDelegate = self
-        self.navigationController?.showViewController(previewController, sender: nil)
-	}
+        self.navigationController?.show(previewController, sender: nil)
+    }
     
     func onPreviewPageBack() {
         self.collectionView?.reloadData()
-        self.eventSelectNumberChange(PhotoImage.instance.selectedImage.count)
+        self.eventSelectNumberChange(number: PhotoImage.instance.selectedImage.count)
     }
 }

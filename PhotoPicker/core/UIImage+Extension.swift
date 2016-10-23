@@ -37,9 +37,9 @@ extension UIImage {
         }
         
         UIGraphicsBeginImageContext(toSize)
-        self.drawInRect(CGRectMake(positionX, positionY, scaleWidth, scaleHeight))
+        self.draw(in: CGRect(x: positionX, y: positionY, width: scaleWidth, height: scaleHeight))
         
-        return UIGraphicsGetImageFromCurrentImageContext()
+        return UIGraphicsGetImageFromCurrentImageContext()!
         
     }
     

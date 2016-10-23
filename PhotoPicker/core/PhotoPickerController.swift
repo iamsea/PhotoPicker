@@ -34,26 +34,26 @@ class PhotoPickerController: UINavigationController {
         super.viewDidLoad()
     }
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
     init(type:PageType){
-        let rootViewController = PhotoAlbumsTableViewController(style:.Plain)
+        let rootViewController = PhotoAlbumsTableViewController(style:.plain)
         // clear cache
         PhotoImage.instance.selectedImage.removeAll()
         super.init(rootViewController: rootViewController)
         
         if type == .RecentAlbum || type == .AllAlbum {
-            let currentType = type == .RecentAlbum ? PHAssetCollectionSubtype.SmartAlbumRecentlyAdded : PHAssetCollectionSubtype.SmartAlbumUserLibrary
-            let results = PHAssetCollection.fetchAssetCollectionsWithType(.SmartAlbum, subtype:currentType, options: nil)
+            let currentType = type == .RecentAlbum ? PHAssetCollectionSubtype.smartAlbumRecentlyAdded : PHAssetCollectionSubtype.smartAlbumUserLibrary
+            let results = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype:currentType, options: nil)
             if results.count > 0 {
-                if let model = self.getModel(results[0] as! PHAssetCollection) {
+                if let model = self.getModel(collection: results[0]) {
                     if model.count > 0 {
                         let layout = PhotoCollectionViewController.configCustomCollectionLayout()
                         let controller = PhotoCollectionViewController(collectionViewLayout: layout)
                         
-                        controller.fetchResult = model
+                        controller.fetchResult = model as? PHFetchResult<PHObject>;
                         self.pushViewController(controller, animated: false)
                     }
                 }
@@ -62,8 +62,8 @@ class PhotoPickerController: UINavigationController {
     }
     
     
-    private func getModel(collection: PHAssetCollection) -> PHFetchResult?{
-        let fetchResult = PHAsset.fetchAssetsInAssetCollection(collection, options: PhotoFetchOptions.shareInstance)
+    private func getModel(collection: PHAssetCollection) -> PHFetchResult<PHAsset>?{
+        let fetchResult = PHAsset.fetchAssets(in: collection, options: PhotoFetchOptions.shareInstance)
         if fetchResult.count > 0 {
             return fetchResult
         }
@@ -77,8 +77,8 @@ class PhotoPickerController: UINavigationController {
     
     func imageSelectFinish(){
         if self.imageSelectDelegate != nil {
-            self.dismissViewControllerAnimated(true, completion: nil)
-            self.imageSelectDelegate?.onImageSelectFinished(PhotoImage.instance.selectedImage)
+            self.dismiss(animated: true, completion: nil)
+            self.imageSelectDelegate?.onImageSelectFinished(images: PhotoImage.instance.selectedImage)
         }
     }
     

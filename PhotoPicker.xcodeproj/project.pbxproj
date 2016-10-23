@@ -17,7 +17,6 @@
 		CE9106861C8FDE190055DE61 /* PhotoPreviewToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9106851C8FDE190055DE61 /* PhotoPreviewToolbarView.swift */; };
 		CE9106881C900E1A0055DE61 /* PhotoPreviewBottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9106871C900E1A0055DE61 /* PhotoPreviewBottomBarView.swift */; };
 		CE9F28441C8D54F0004F3BA2 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9F28431C8D54F0004F3BA2 /* UIImage+Extension.swift */; };
-		CE9F28461C8D6CE3004F3BA2 /* NSIndexSet+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9F28451C8D6CE3004F3BA2 /* NSIndexSet+Extension.swift */; };
 		CE9FDF111C943A160051848A /* SinglePhotoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9FDF101C943A160051848A /* SinglePhotoPreviewViewController.swift */; };
 		CEA139DC1C8ACCD1003AEBC4 /* PhotoAlbumsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA139DB1C8ACCD1003AEBC4 /* PhotoAlbumsTableViewController.swift */; };
 		CEAAA63C1C8E83E80044336B /* AlbumToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAAA63B1C8E83E80044336B /* AlbumToolbarView.swift */; };
@@ -47,7 +46,6 @@
 		CE9106851C8FDE190055DE61 /* PhotoPreviewToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoPreviewToolbarView.swift; sourceTree = "<group>"; };
 		CE9106871C900E1A0055DE61 /* PhotoPreviewBottomBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoPreviewBottomBarView.swift; sourceTree = "<group>"; };
 		CE9F28431C8D54F0004F3BA2 /* UIImage+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
-		CE9F28451C8D6CE3004F3BA2 /* NSIndexSet+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSIndexSet+Extension.swift"; sourceTree = "<group>"; };
 		CE9FDF101C943A160051848A /* SinglePhotoPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePhotoPreviewViewController.swift; sourceTree = "<group>"; };
 		CEA139DB1C8ACCD1003AEBC4 /* PhotoAlbumsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumsTableViewController.swift; sourceTree = "<group>"; };
 		CEAAA63B1C8E83E80044336B /* AlbumToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumToolbarView.swift; sourceTree = "<group>"; };
@@ -101,7 +99,6 @@
 			isa = PBXGroup;
 			children = (
 				CE9F28431C8D54F0004F3BA2 /* UIImage+Extension.swift */,
-				CE9F28451C8D6CE3004F3BA2 /* NSIndexSet+Extension.swift */,
 				CEE098881C91BEE40048FEF4 /* UICollectionView+Extension.swift */,
 			);
 			name = extension;
@@ -213,11 +210,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = dailyios;
 				TargetAttributes = {
 					CEBCC8AB1C893D5A000BD551 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = Z865YP4AC3;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -269,7 +268,6 @@
 				CEBCC8B01C893D5A000BD551 /* AppDelegate.swift in Sources */,
 				CE9FDF111C943A160051848A /* SinglePhotoPreviewViewController.swift in Sources */,
 				CE019C601C8C127C00DBAB3B /* PhotoCollectionViewController.swift in Sources */,
-				CE9F28461C8D6CE3004F3BA2 /* NSIndexSet+Extension.swift in Sources */,
 				CEAAA6431C8ECE0F0044336B /* PhotoImageManager.swift in Sources */,
 				CE019C5C1C8BFA7300DBAB3B /* PhotoAlbumTableViewCell.swift in Sources */,
 				CE9106881C900E1A0055DE61 /* PhotoPreviewBottomBarView.swift in Sources */,
@@ -319,8 +317,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -342,7 +342,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -363,8 +363,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -380,9 +382,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -391,11 +394,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = Z865YP4AC3;
 				INFOPLIST_FILE = PhotoPicker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dailyios.PhotoPicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -403,11 +408,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = Z865YP4AC3;
 				INFOPLIST_FILE = PhotoPicker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dailyios.PhotoPicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
