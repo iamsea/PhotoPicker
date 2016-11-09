@@ -215,7 +215,7 @@
 				TargetAttributes = {
 					CEBCC8AB1C893D5A000BD551 = {
 						CreatedOnToolsVersion = 7.2;
-						DevelopmentTeam = Z865YP4AC3;
+						DevelopmentTeam = W47HCG33S5;
 						LastSwiftMigration = 0800;
 					};
 				};
@@ -394,11 +394,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = Z865YP4AC3;
+				DEVELOPMENT_TEAM = W47HCG33S5;
 				INFOPLIST_FILE = PhotoPicker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dailyios.PhotoPicker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sea.PhotoPicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -408,11 +408,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = Z865YP4AC3;
+				DEVELOPMENT_TEAM = W47HCG33S5;
 				INFOPLIST_FILE = PhotoPicker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dailyios.PhotoPicker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sea.PhotoPicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};

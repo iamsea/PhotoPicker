@@ -35,6 +35,7 @@ class SinglePhotoPreviewViewController: UIViewController,UICollectionViewDataSou
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(SinglePhotoPreviewViewController.eventRemoveImage))
     }
     
+    
     func eventRemoveImage(){
         let element = self.selectImages?.remove(at: self.currentPage)
         self.updatePageTitle()
@@ -52,6 +53,7 @@ class SinglePhotoPreviewViewController: UIViewController,UICollectionViewDataSou
         self.collectionView?.setContentOffset(CGPoint(x: CGFloat(self.currentPage) * self.view.bounds.width, y: 0), animated: false)
         self.updatePageTitle()
     }
+
     
     private func updatePageTitle(){
         self.title =  String(self.currentPage+1) + "/" + String(self.selectImages!.count)
